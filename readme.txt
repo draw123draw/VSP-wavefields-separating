@@ -10,3 +10,5 @@ slope_scanning_median.cpp is for calculating the slopes and median filtering the
 All parameter variables are global variables defined after the declaration of header file.
 
 To run the code, a MinGW compiler is required. Generate the executable file with the Makefile and then run it. 
+
+How to use the Makefile: input "make" or "mingw32-make" in the terminal corresponding to the directory of this project. Remember to have a MinGW compiler in the system path.

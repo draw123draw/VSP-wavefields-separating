@@ -1,3 +1,5 @@
+/*There is only 'fftw3-3.lib' in the lib folder, as a result, the compiler may not find it in the system of Linux.
+However, this can be solved using 'find_window_size.cpp'*/
 #include<stdio.h>
 #include<math.h>
 #include"fftw3.h"

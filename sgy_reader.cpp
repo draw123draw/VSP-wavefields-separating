@@ -68,8 +68,8 @@ long long getFileSize(char* filePath)
 {//https://blog.csdn.net/codears/article/details/111405309
 	FILE* f;
 	if(NULL==(f=fopen(filePath,"rb"))) { printf("fopen error\n"); return -1; }
-	if(0!=_fseeki64(f,0,SEEK_END)) { printf("getFileSize fseek error\n"); return -1; }
-	long long fileSize=_ftelli64(f);
+	if(0!=fseek(f,0,SEEK_END)) { printf("getFileSize fseek error\n"); return -1; }
+	long long fileSize=ftell(f);
 	if(fileSize<0) { printf("ftell error\n"); }
 	fclose(f);
 	return fileSize;

@@ -111,15 +111,16 @@ void readsgy(char* filename,float** data,unsigned char* header,int nrow,int ncol
 	unsigned char fmt[2];
 	fseek(fsgy,3224,0);
 	for(i=0; i<2; i++)fmt[i]=fgetc(fsgy);
+	size_t check;
 	if(fmt[0]+fmt[1]==1)//sun
 	{
 		// printf("sun\n");
 		fseek(fsgy,0,0);
-		fread(header,3600,1,fsgy);
+		check=fread(header,3600,1,fsgy);
 		for(i=0; i<nrow; i++)
 		{
-			fread(header+3600+i*240,240L,1,fsgy);
-			fread(data[i],4L*ncol,1,fsgy);
+			check=fread(header+3600+i*240,1L,240L,fsgy);
+			check=fread(data[i],4L,ncol,fsgy);
 		}
 		if(fmt[1]==0)
 		{
@@ -140,11 +141,11 @@ void readsgy(char* filename,float** data,unsigned char* header,int nrow,int ncol
 	{
 		// printf("pc\n");
 		fseek(fsgy,0,0);
-		fread(header,3600,1,fsgy);
+		check=fread(header,3600,1,fsgy);
 		for(i=0; i<nrow; i++)
 		{
-			fread(header+3600+i*240,240L,1,fsgy);
-			fread(data[i],4L*ncol,1,fsgy);
+			check=fread(header+3600+i*240,1L,240L,fsgy);
+			check=fread(data[i],4L,ncol,fsgy);
 		}
 		if(fmt[1]==5)
 		{

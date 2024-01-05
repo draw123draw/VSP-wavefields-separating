@@ -2,8 +2,8 @@
 #include<stdlib.h>
 #include<math.h>
 #include"sgy_reader.cpp"
-char filename[]=R"(data\model_data.sgy)";
-char fbfilename[]=R"(data\model_data_fb.txt)";
+char filename[]="./data/model_data.sgy";
+char fbfilename[]="./data/model_data_fb.txt";
 struct cmpx
 {
     float re;
@@ -87,7 +87,7 @@ int main()
     delta_t=find_delta_t(fbfilename,samples,dt);
 
     best_trace_win=ceil(best_time_win/delta_t);
-    printf("The best time window is %d\nThe best trace window is %d\nSlightly larger than the reference value may be more stable",best_time_win,best_trace_win);
+    printf("The best time window is %d\nThe best trace window is %d\nSlightly larger than the reference value may be more stable\n",best_time_win,best_trace_win);
     free(A);
     free(A_f_mean);
     free(hdr);

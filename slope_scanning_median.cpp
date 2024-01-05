@@ -2,18 +2,52 @@
 #include<stdlib.h>
 #include<math.h>
 #include<malloc.h>
-#include<windows.h>
+#include<unistd.h>
 #include<pthread.h>
+#include<string.h>
 #include<sys/stat.h>
 #include"sgy_reader.cpp"
-#define angle_r 80 
+#define angle_r 80
 
-char filename[]=R"(data\model_data.sgy)";
+char filename[]=R"(data/model_data.sgy)";
 int trace_win=20;
 int span=trace_win+1;
 int time_win=60;
-const int TH4=atoi(getenv("NUMBER_OF_PROCESSORS"));
-//const int TH4=12;
+
+#ifdef _WIN32
+#include<windows.h>
+LARGE_INTEGER frequency;
+LARGE_INTEGER start_time;
+void tic() 
+{
+    QueryPerformanceFrequency(&frequency);
+    QueryPerformanceCounter(&start_time);
+}
+double toc() 
+{
+    LARGE_INTEGER end_time;
+    QueryPerformanceCounter(&end_time);
+    double elapsed_time = (double)(end_time.QuadPart - start_time.QuadPart) / frequency.QuadPart;
+    return elapsed_time;
+}
+
+int TH4=atoi(getenv("NUMBER_OF_PROCESSORS"));
+#elif __linux__
+int TH4=sysconf(_SC_NPROCESSORS_CONF);
+struct timespec start_time;
+void tic() 
+{
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
+}
+double toc() 
+{
+    struct timespec end_time;
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+    double elapsed_time = (end_time.tv_sec - start_time.tv_sec) +
+                          (end_time.tv_nsec - start_time.tv_nsec) / 1e9;
+    return elapsed_time;
+}
+#endif
 int finish;
 void padarray2(double** input,double** output,int padx,int pady,int padder,int nrow,int ncol)
 {
@@ -445,13 +479,13 @@ void wavefield_sep(float** seis,float** U,float** D,int traces,int samples,char*
 	tracesL=2*pad_x+traces;
 	samplesL=2*pad_t+samples;
 
-	float** AL=(float**)malloc(tracesL*sizeof(float*)); for(i=0; i<tracesL; i++)AL[i]=(float*)malloc(samplesL*sizeof(float));
+	float** AL=(float**)malloc(tracesL*sizeof(float*));for(i=0; i<tracesL; i++)AL[i]=(float*)malloc(samplesL*sizeof(float));
 	padarray2f(seis,AL,pad_x,pad_t,3,traces,samples);
 
 	float* A1=(float*)malloc(4*tracesL*samplesL);
 	for(i=0; i<tracesL; i++)for(j=0; j<samplesL; j++)A1[i*samplesL+j]=AL[i][j];
 
-	DWORD tic; tic=GetTickCount();
+	tic();
 	int* theta_win_c1=(int*)calloc(tracesL*samplesL,sizeof(int));
 	pthread_t th[TH4];
 	for(i=0; i<TH4; i++)
@@ -467,7 +501,7 @@ void wavefield_sep(float** seis,float** U,float** D,int traces,int samples,char*
 		pthread_create(&th[i],NULL,calc_angles_pt,(void*)para);
 	}
 	for(i=0; i<TH4; i++)pthread_join(th[i],NULL);
-	printf("time=%f\n",(float)(GetTickCount()-tic)/1000);
+	printf("consumed time=%lf\n",toc());
 
 	int** theta_win_c1_temp=(int**)malloc(traces*sizeof(int*)); for(i=0; i<traces; i++)theta_win_c1_temp[i]=(int*)malloc(samples*sizeof(int));
 	for(i=0; i<traces; i++)for(j=0; j<samples; j++)theta_win_c1_temp[i][j]=(float)theta_win_c1[(i+pad_x)*samplesL+j+pad_t];
@@ -584,9 +618,15 @@ int main()
 	struct manynames thisfile;
 	findnames(filename,&thisfile);
 	char outfile01[100],outfile02[100],anglefile[100];
-	if(stat("ups",&st)!=0)system("mkdir ups");
-	if(stat("downs",&st)!=0)system("mkdir downs");
-	if(stat("angles",&st)!=0)system("mkdir angles");
+#ifdef _WIN32
+	if(stat("ups",&st)!=0)mkdir("ups");
+	if(stat("downs",&st)!=0)mkdir("downs");
+	if(stat("angles",&st)!=0)mkdir("angles");
+#elif __linux__
+	if(stat("ups",&st)!=0)mkdir("ups",0755);
+	if(stat("downs",&st)!=0)mkdir("downs",0755);
+	if(stat("angles",&st)!=0)mkdir("angles",0755);
+#endif
 
 	float** U=(float**)malloc(traces*sizeof(float*)); for(i=0; i<traces; i++)U[i]=(float*)malloc(samples*sizeof(float));
 	float** D=(float**)malloc(traces*sizeof(float*)); for(i=0; i<traces; i++)D[i]=(float*)malloc(samples*sizeof(float));
@@ -594,12 +634,12 @@ int main()
 	float** RD=(float**)malloc(traces*sizeof(float*)); for(i=0; i<traces; i++)RD[i]=(float*)malloc(samples*sizeof(float));
 	float** R0=(float**)malloc(traces*sizeof(float*)); for(i=0; i<traces; i++)R0[i]=(float*)malloc(samples*sizeof(float));
 
-	strcpy(anglefile,"angles\\angle_raw.csv");
+	strcpy(anglefile,"./angles/angle_raw.csv");
 	wavefield_sep(A,U,D,traces,samples,anglefile);
 	finish=0;
 
-	sprintf(outfile01,"ups\\%s_up0.sgy",thisfile.file);
-	sprintf(outfile02,"downs\\%s_down0.sgy",thisfile.file);
+	sprintf(outfile01,"./ups/%s_up0.sgy",thisfile.file);
+	sprintf(outfile02,"./downs/%s_down0.sgy",thisfile.file);
 	revisegy(U,outfile01,hdr,traces,samples);
 	revisegy(D,outfile02,hdr,traces,samples);
 
@@ -614,15 +654,15 @@ int main()
 	{
 		printf("iter=%d\n",iter+1);
 		char outfile1[100],outfile2[100];
-		sprintf(anglefile,"angles\\angle_down%d.csv",iter+1);
+		sprintf(anglefile,"angles/angle_down%d.csv",iter+1);
 		wavefield_sep(RD,R0,D,traces,samples,anglefile); finish=0;
 		for(i=0; i<traces; i++)for(j=0; j<samples; j++)RD[i][j]=RD[i][j]-R0[i][j];
-		sprintf(anglefile,"angles\\angle_up%d.csv",iter+1);
+		sprintf(anglefile,"angles/angle_up%d.csv",iter+1);
 		wavefield_sep(RU,U,R0,traces,samples,anglefile); finish=0;
 		for(i=0; i<traces; i++)for(j=0; j<samples; j++)RU[i][j]=RU[i][j]-R0[i][j];
 
-		sprintf(outfile1,"ups\\%s_up%d.sgy",thisfile.file,iter+1);
-		sprintf(outfile2,"downs\\%s_down%d.sgy",thisfile.file,iter+1);
+		sprintf(outfile1,"ups/%s_up%d.sgy",thisfile.file,iter+1);
+		sprintf(outfile2,"downs/%s_down%d.sgy",thisfile.file,iter+1);
 		revisegy(U,outfile1,hdr,traces,samples);
 		revisegy(D,outfile2,hdr,traces,samples);
 	}

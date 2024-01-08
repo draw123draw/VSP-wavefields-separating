@@ -13,11 +13,11 @@ void fft(cmpx* x,cmpx* f,int N)
 {
     int i,ii;
     double sr,si,pi=3.1415926;
-    for(i=0; i<N; i++)
+    for(i=0;i<N/2;i++)
     {
         sr=0;
         si=0;
-        for(ii=0; ii<N; ii++)
+        for(ii=0;ii<N/2;ii++)
         {
             sr+=x[ii].re*cos(2*pi*ii*i/N)+x[ii].im*sin(2*pi*ii*i/N);
             si+=-x[ii].re*sin(2*pi*ii*i/N)+x[ii].im*cos(2*pi*ii*i/N);
@@ -29,7 +29,7 @@ void fft(cmpx* x,cmpx* f,int N)
 int findmaxidx(double* arr,int n)
 {
     int maxidx=0;
-    for(int i=1;i<n;i++)if(arr[i]>arr[maxidx])maxidx=i;
+    for(int i=1;i<n/2;i++)if(arr[i]>arr[maxidx])maxidx=i;
     return maxidx;
 }
 int find_delta_t(char* fbfilename,int nums,float dt)
@@ -65,8 +65,8 @@ int main()
     dt=hdr[3224]+hdr[3225]==1?(float)(hdr[3216]*256+hdr[3217])/1e3:(float)(hdr[3216]+256*hdr[3217])/1e3;
     double* A_f_mean=(double*)calloc(samples,sizeof(double));
     //mean trace value
-    cmpx* in=(cmpx*)malloc(samples*sizeof(cmpx));
-    cmpx* out=(cmpx*)malloc(samples*sizeof(cmpx));
+    cmpx* in=(cmpx*)calloc(samples,sizeof(cmpx));
+    cmpx* out=(cmpx*)calloc(samples,sizeof(cmpx));
     for(i=0;i<100;i++)
     {
         for(j=0;j<samples;j++)

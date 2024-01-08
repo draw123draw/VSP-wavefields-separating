@@ -67,7 +67,7 @@ int main()
     //mean trace value
     cmpx* in=(cmpx*)malloc(samples*sizeof(cmpx));
     cmpx* out=(cmpx*)malloc(samples*sizeof(cmpx));
-    for(i=0;i<traces;i++)
+    for(i=0;i<100;i++)
     {
         for(j=0;j<samples;j++)
         {

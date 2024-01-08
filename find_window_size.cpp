@@ -6,13 +6,13 @@ char filename[]="./data/model_data.sgy";
 char fbfilename[]="./data/model_data_fb.txt";
 struct cmpx
 {
-    float re;
-    float im;
+    double re;
+    double im;
 };
 void fft(cmpx* x,cmpx* f,int N)
 {
     int i,ii;
-    float sr,si,pi=3.1415926;
+    double sr,si,pi=3.1415926;
     for(i=0; i<N; i++)
     {
         sr=0;
@@ -26,7 +26,7 @@ void fft(cmpx* x,cmpx* f,int N)
         f[i].im=si;
     }
 }
-int findmaxidx(float* arr,int n)
+int findmaxidx(double* arr,int n)
 {
     int maxidx=0;
     for(int i=1;i<n;i++)if(arr[i]>arr[maxidx])maxidx=i;
@@ -63,7 +63,7 @@ int main()
     unsigned char* hdr=(unsigned char*)malloc((3600+240*traces)*sizeof(unsigned char));
     readsgy(filename,A,hdr,traces,samples);
     dt=hdr[3224]+hdr[3225]==1?(float)(hdr[3216]*256+hdr[3217])/1e3:(float)(hdr[3216]+256*hdr[3217])/1e3;
-    float* A_f_mean=(float*)calloc(samples,sizeof(float));
+    double* A_f_mean=(double*)calloc(samples,sizeof(double));
     //mean trace value
     cmpx* in=(cmpx*)malloc(samples*sizeof(cmpx));
     cmpx* out=(cmpx*)malloc(samples*sizeof(cmpx));

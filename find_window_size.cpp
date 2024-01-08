@@ -79,7 +79,7 @@ int main()
     }
     fm=findmaxidx(A_f_mean,samples);
     int best_time_win;
-    best_time_win=2*ceil(2000/fm);
+    best_time_win=2*ceil(2000/(float)fm);
     int delta_t,best_trace_win;
 
     //determining the delta_t

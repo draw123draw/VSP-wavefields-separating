@@ -75,7 +75,7 @@ int main()
             in[j].im=0;
         }
         fft(in,out,samples);
-        for(j=0;j<samples;j++)A_f_mean[j]+=out[j].re*out[j].re+out[j].im*out[j].im;
+        for(j=0;j<samples;j++)A_f_mean[j]+=sqrt(out[j].re*out[j].re+out[j].im*out[j].im)/samples;
     }
     fm=findmaxidx(A_f_mean,samples);
     int best_time_win;

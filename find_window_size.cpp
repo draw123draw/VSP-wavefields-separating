@@ -62,7 +62,7 @@ int main()
     float** A=(float**)malloc(traces*sizeof(float*)); for(i=0; i<traces; i++)A[i]=(float*)malloc(samples*sizeof(float));
     unsigned char* hdr=(unsigned char*)malloc((3600+240*traces)*sizeof(unsigned char));
     readsgy(filename,A,hdr,traces,samples);
-    dt=(float)(hdr[3216]*256+hdr[3217])/1e3;
+    dt=hdr[3224]+hdr[3225]==1?(float)(hdr[3216]*256+hdr[3217])/1e3:(float)(hdr[3216]+256*hdr[3217])/1e3;
     float* A_f_mean=(float*)calloc(samples,sizeof(float));
     //mean trace value
     cmpx* in=(cmpx*)malloc(samples*sizeof(cmpx));

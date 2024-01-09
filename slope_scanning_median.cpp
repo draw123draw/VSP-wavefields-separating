@@ -182,6 +182,20 @@ void padarray2f(float** input,float** output,int padx,int pady,int padder,int nr
 		}
 	}
 }
+void normalization(float **data,long long nrow,int ncol)
+{
+	int i,j;
+	float data_min=FLT_MAX,data_max=-FLT_MAX;
+	for(i=0;i<nrow;i++)
+	{
+		for(j=0;j<ncol;j++)
+		{
+			if(data_max<data[i][j])data_max=data[i][j];
+			if(data_min>data[i][j])data_min=data[i][j];
+		}
+	}
+	for(i=0;i<nrow;i++)for(j=0;j<ncol;j++)data[i][j]=(data[i][j]-data_min)/(data_max-data_min);
+}
 void gaussfilt2(double** input,double** output,double sigma,int nrow,int ncol)
 {	//paras↓
 	int padder=2;//pad mode
@@ -611,6 +625,7 @@ int main()
 	float** A=(float**)malloc(traces*sizeof(float*)); for(i=0; i<traces; i++)A[i]=(float*)malloc(samples*sizeof(float));
 	unsigned char* hdr=(unsigned char*)malloc((3600+240*traces)*sizeof(unsigned char));
 	readsgy(filename,A,hdr,traces,samples);
+	normalization(A,traces,samples);
 	//A[i][j]=amplitude(ith trace, jth sample), in traces, samples
 	/////////////////////////////////////////////////////////////////////////////////////////////
 

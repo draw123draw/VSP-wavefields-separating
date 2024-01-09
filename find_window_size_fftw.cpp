@@ -9,7 +9,7 @@ char fbfilename[]=R"(data\model_data_fb.txt)";
 int findmaxidx(float* arr,int n)
 {
     int maxidx=0;
-    for(int i=1;i<n;i++)if(arr[i]>arr[maxidx])maxidx=i;
+    for(int i=1;i<n/2;i++)if(arr[i]>arr[maxidx])maxidx=i;
     return maxidx;
 }
 int find_delta_t(char* fbfilename,int nums,float dt)

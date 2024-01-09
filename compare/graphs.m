@@ -4,7 +4,7 @@ A=readsgy('../downs/model_data_down2.sgy');
 A=A';
 %% sgy graph
 figure
-% A=loog(A);%AGC by 
+% A=loog(A);%AGC by taking logarithm
 m=max(abs(A(:)))/1.5;%AGC
 imagesc(A,[-m,m])
 mycolor=load('color.csv');

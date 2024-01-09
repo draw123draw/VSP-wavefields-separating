@@ -10,9 +10,9 @@
 #define angle_r 80
 
 char filename[]=R"(data/model_data.sgy)";
-int trace_win=20;//can be determined by find_window_size
+int trace_win=28;//can be determined by find_window_size
 int span=trace_win+1;
-int time_win=60;//can be determined by find_window_size
+int time_win=56;//can be determined by find_window_size
 
 #ifdef _WIN32
 #include<windows.h>

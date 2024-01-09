@@ -4,7 +4,7 @@ The catalog consts of:
 3.Source code of the algorithm.
 
 The first break time data is only for estimating the delta_t in formula (15) in the paper. The delta_t can also be editted in the 86th row in 'find_window_size.cpp' or 66th row in 'find_window_size_fftw.cpp'
-'find_window_size.cpp' is for calculating the window size to input to slope_scanning_median.cpp. 'find_window_size_fftw.cpp' is the accelerated version using the 'fftw3' library, however, this can only be used in a system of Windows. For Linux systems, fftw3  library needs to be installed manually. To use 'find_window_size_fftw.cpp', change 'find_window_size.cpp' in Makefile to 'find_window_size_fftw.cpp'.
+'find_window_size.cpp' is for calculating the window size to input to slope_scanning_median.cpp. 'find_window_size_fftw.cpp' is the accelerated version using the 'fftw3' library, however, this can only be used in a system of Windows. For Linux systems, fftw3 library needs to be installed manually. To use 'find_window_size_fftw.cpp', change 'find_window_size.cpp' in Makefile to 'find_window_size_fftw.cpp'.
 'slope_scanning_median.cpp' is for calculating the slopes and median filtering the VSP data.
 
 After determining the optimal window size by 'find_window_size.cpp', global int variable 'trace_win' and 'time_win' can be editted in the 13th and 15th row in 'slope_scanning_median.cpp'. 

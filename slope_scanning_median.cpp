@@ -194,7 +194,9 @@ void normalization(float **data,long long nrow,int ncol)
 			if(data_min>data[i][j])data_min=data[i][j];
 		}
 	}
-	for(i=0;i<nrow;i++)for(j=0;j<ncol;j++)data[i][j]=2*(data[i][j]-data_min)/(data_max-data_min)-1;
+	for(i=0;i<nrow;i++)for(j=0;j<ncol;j++)
+		if(data[i][j]!=0)
+			data[i][j]=2*(data[i][j]-data_min)/(data_max-data_min)-1;
 }
 void gaussfilt2(double** input,double** output,double sigma,int nrow,int ncol)
 {	//paras↓

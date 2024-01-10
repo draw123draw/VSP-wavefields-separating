@@ -7,14 +7,15 @@ Fk=fft2(D,Nx,Nt);
 FkD=Fk;
 FkU=Fk;
 
+att=0.03;% Attenuation factor
 %% either:deivide by quadrant
 for i=1:Nx
     for j=1:Nt
         if (i>Nx/2&&j>Nt/2)||(i<Nx/2&&j<Nt/2)
-            FkD(i,j)=0;
+            FkD(i,j)=FkD(i,j)*att;
         % elseif (i<Nx/2&&j>Nt/2)||(i>Nx/2&&j<Nt/2)
         else
-            FkU(i,j)=0;
+            FkU(i,j)=FkD(i,j)*att;
         end
     end
 end
